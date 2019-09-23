@@ -53,11 +53,10 @@ function welcome(){
 ───────────────────────────────────────────────────────────────────────────────────
     \n`))
     showProducts();
-    // products();
+
 }
 
 // Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
-
 function showProducts(){
 console.log("\n───────────────────────────────── P R O D U C T S ─────────────────────────────────\n".cyan);
     connection.query("SELECT * FROM products", function(err, res){
@@ -83,45 +82,14 @@ console.log("\n─────────────────────�
             {hAlign:'left', content:"$" + row.price, vAlign:'center'}
         ]
         table.push(newRow)
-        // productsArr.push(row.item_id)
       })
       console.log(table.toString())
            
       connection.end();
       });
  
-    //   console.log(table.toString());
 }
 
-// function products(){
-// connection.query("SELECT * FROM products", function(err, res){
-//     if(err) throw err;
-//     for (var i = 0; i < res.length; i++){
-//         product_id = res[i].item_id;
-//         product_name = res[i].product_name;
-//         product_description = res[i].product_description;
-//         price = res[i].price;
-//         console.log(product_id + product_name + product_description + price);
-//     }
-//     showProducts()
-//     connection.end();
-// });
-// }
-// var constructProduct = function(completeObject){
-//     for(var i = 0; i < 1; i++){
-//         completeObject.product = completeObject.product.push('[product_id]', res[i].item_id)
-//     }
-// }
-
-// function products(product_id, product_name, product_description, price){
-//     this.product_id = product_id;
-//     this.product_name = product_name;
-//     this.product_description = product_description;
-//     this.price = price; 
-
-//     this.inventory = showProducts(); 
-//     console.log("I am the inventory" + this.inventory)
-// }
 
 // function products(){
 //     inquirer.prompt([{

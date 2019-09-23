@@ -1,1 +1,1 @@
-![bamazon](assets/bamazon_logo.png)
+![bamazon](assets/bamazon_logo.svg)
