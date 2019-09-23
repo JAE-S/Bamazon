@@ -1,46 +1,137 @@
 // ### Challenge #1: Customer View (Minimum Requirement)
 
 var chalk = require('chalk');
+var colors = require('colors');
+
+var Table = require('cli-table3');
 
 var inquirer = require('inquirer');
 
-var connection = mysql.createconnection({
+var mysql = require('mysql');
+
+var connection = mysql.createConnection({
     host: "localhost", 
 
     port: 3306, 
 
     user: "root", 
 
-    password: 12345678,
-    database: "bamazon_DB"
+    password: "12345678",
+    database: "bamazon_db"
 
-})
-
-connection.connection(function(err) {
-    if (err) throw err;
-    console.log("connected as id " + connection.threadIs + '\n');
-    
 });
 
-// 1. Create a MySQL Database called `bamazon`.
+connection.connect(function(err) {
+    if (err) throw err;
+    console.log("connected as id " + connection.threadId + '\n');
+    welcome();
+});
 
-// 2. Then create a Table inside of that database called `products`.
+// Global variables
+var product_id = [];
+var product_name = [];
+var product_description = [];
+var price = [];
+var table;
 
-// 3. The products table should have each of the following columns:
+function welcome(){
+    console.log(chalk.green(`
+───────────────────────────────────────────────────────────────────────────────────
+                                    WELCOME TO
+───────────────────────────────────────────────────────────────────────────────────
 
-//    * item_id (unique id for each product)
+                                                                                
+    _/                                                                         
+    _/_/_/      _/_/_/  _/_/_/  _/_/      _/_/_/  _/_/_/_/    _/_/    _/_/_/    
+    _/    _/  _/    _/  _/    _/    _/  _/    _/      _/    _/    _/  _/    _/   
+    _/    _/  _/    _/  _/    _/    _/  _/    _/    _/      _/    _/  _/    _/    
+    _/_/_/      _/_/_/  _/    _/    _/    _/_/_/  _/_/_/_/    _/_/    _/    _/     
+                                                                        
 
-//    * product_name (Name of product)
+───────────────────────────────────────────────────────────────────────────────────
+              1 STOP SHOP FOR EVERYTHING FROM A-Z THAT YOU DON'T NEED
+───────────────────────────────────────────────────────────────────────────────────
+    \n`))
+    showProducts();
+    // products();
+}
 
-//    * department_name
+// Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
 
-//    * price (cost to customer)
+function showProducts(){
+console.log("\n───────────────────────────────── P R O D U C T S ─────────────────────────────────\n".cyan);
+    connection.query("SELECT * FROM products", function(err, res){
+    if(err) throw err;
+    // instantiate
+    let productsArr = [];
+    var table = new Table({
+        chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
+               , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
+               , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
+               , 'right': '║' , 'right-mid': '╢' , 'middle': '│' },
+        head: [{hAlign:'center', content:"PRODUCT ID".cyan,vAlign:'center'}, {hAlign:'center', content:"NAME".cyan,vAlign:'center'}, {hAlign:'center', content:"DESCRIPTION".cyan,vAlign:'center'}, {hAlign:'center', content:"COST".cyan,vAlign:'center'}],
+        style: { 'padding-left': 1, 'padding-right': 1 },
+        colWidths: [12, 29, 29, 8],
+        vAlign: 'center',
+        wordWrap: true
+      });
+      res.forEach(function(row) {
+        let newRow = [
+            {hAlign:'center', content:row.item_id, vAlign:'center'}, 
+            {hAlign:'center', content:row.product_name, vAlign:'center'}, 
+            {hAlign:'center', content:row.product_description, vAlign:'center'},
+            {hAlign:'left', content:"$" + row.price, vAlign:'center'}
+        ]
+        table.push(newRow)
+        // productsArr.push(row.item_id)
+      })
+      console.log(table.toString())
+           
+      connection.end();
+      });
+ 
+    //   console.log(table.toString());
+}
 
-//    * stock_quantity (how much of the product is available in stores)
+// function products(){
+// connection.query("SELECT * FROM products", function(err, res){
+//     if(err) throw err;
+//     for (var i = 0; i < res.length; i++){
+//         product_id = res[i].item_id;
+//         product_name = res[i].product_name;
+//         product_description = res[i].product_description;
+//         price = res[i].price;
+//         console.log(product_id + product_name + product_description + price);
+//     }
+//     showProducts()
+//     connection.end();
+// });
+// }
+// var constructProduct = function(completeObject){
+//     for(var i = 0; i < 1; i++){
+//         completeObject.product = completeObject.product.push('[product_id]', res[i].item_id)
+//     }
+// }
 
-// 4. Populate this database with around 10 different products. (i.e. Insert "mock" data rows into this database and table).
+// function products(product_id, product_name, product_description, price){
+//     this.product_id = product_id;
+//     this.product_name = product_name;
+//     this.product_description = product_description;
+//     this.price = price; 
 
-// 5. Then create a Node application called `bamazonCustomer.js`. Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
+//     this.inventory = showProducts(); 
+//     console.log("I am the inventory" + this.inventory)
+// }
+
+// function products(){
+//     inquirer.prompt([{
+//         type: "checkbox",
+//         name: "products",
+//         message: ""
+//     }])
+// }
+
+
 
 // 6. The app should then prompt users with two messages.
 
