@@ -5,6 +5,7 @@
 
 'bamazon' is a CLI inventory management app that was created with Node.JS and MySQL. The theme for this app was inspired by 1970's wacky pack trading cards that goofed on modern advertisements. 
 
+![bamazon Products](assets/bamazon_products.svg)
 
 ```
  bamazon allows customers to place orders and then depletes stock from the store's inventory.

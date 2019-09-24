@@ -31,6 +31,7 @@ connection.connect(function(err) {
 // Global variables
 var inventoryArr;
 var shoppingList;
+var newAmount;
 var table;
 var instock = false; 
 
@@ -163,6 +164,7 @@ function addItem(){
         let shoppingList = [];
         shoppingList.push({item_Id: answers.itemId, quantity: answers.quantity});
         console.log(shoppingList);
+        // updateStock()
     });
 }
 
@@ -189,10 +191,7 @@ function addItem(){
 //             return answers.quantity;
 //         }
 
-// function checkOut(){
-//     shoppingList(answers)
-//     console.log("Lets check out!")
-// }
+
 
 
 // Validates that the user input matches a product's ID 
@@ -205,11 +204,23 @@ function validateId(itemId){
 function validateStock(quantity){
     connection.query("SELECT * FROM products", function(err, res){
         if(err) throw err;
-        if(answers.itemId === res[i].item_id && (res[i].stock_quantity - answers.quantity) >= 0){
+        var newAmount = res[i].stock_quantity - shoppingList[0].quantity;
+        if(shoppingList[0].item_Id === res[i].itemId && newAmount >= 0){
+            console.log(newAmount)
             return true || "The quantity you selected is unavailable at this time."; 
-        }
-    })
+        } 
+        connection.end();
+    });
 }
+
+// function updateStock(){
+//     connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
+//     function(err, res){
+//         if(err) throw err;
+//         mainMenu();
+//     })
+//     connection.end();
+// }
 
 
 // 8. However, if your store _does_ have enough of the product, you should fulfill the customer's order.
