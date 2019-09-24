@@ -30,7 +30,7 @@ connection.connect(function(err) {
 
 // Global variables
 var inventoryArr;
-var shoppingList;
+var shoppingList = [];
 var newAmount;
 var table;
 var instock = false; 
@@ -161,10 +161,10 @@ function addItem(){
             return answers.itemId;
         }
     }]).then(function(answers){
-        let shoppingList = [];
+        shoppingList = [];
         shoppingList.push({item_Id: answers.itemId, quantity: answers.quantity});
         console.log(shoppingList);
-        // updateStock()
+        updateStock(answers);
     });
 }
 
@@ -201,17 +201,30 @@ function validateId(itemId){
 }
 
 // Validates stock quantities 
-// function validateStock(quantity){
-//     connection.query("SELECT * FROM products", function(err, res){
-//         if(err) throw err;
-//         var newAmount = res[i].stock_quantity - shoppingList[0].quantity;
-//         if(shoppingList[0].item_Id === res[i].itemId && newAmount >= 0){
-//             console.log(newAmount)
-//             return true || "The quantity you selected is unavailable at this time."; 
-//         } 
-//         connection.end();
-//     });
-// }
+function validateStock(quantity){
+    connection.query("SELECT * FROM products", function(err, res){
+        if(err) throw err;
+        var newAmount = res.stock_quantity - shoppingList[0].quantity;
+        if(shoppingList[0].item_Id === res.itemId && newAmount >= 0){
+            console.log(newAmount)
+            return true || "The quantity you selected is unavailable at this time."; 
+        } 
+        connection.end();
+    });
+}
+
+function updateStock(answers){
+    connection.query("SELECT * FROM products", function(err, res){
+    var newAmount = res[answers.itemId-1].stock_quantity - answers.quantity;
+  
+    connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
+    function(err, res){
+        if(err) throw err;
+        mainMenu();
+    })
+});
+}
+
 
 
 // 8. However, if your store _does_ have enough of the product, you should fulfill the customer's order.
