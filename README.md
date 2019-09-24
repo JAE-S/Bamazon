@@ -3,7 +3,7 @@
 ---
 # Welcome to bamazon
 
-'bamazon' is a CLI inventory management app that was created with Node.JS and MySQL. The theme for this app was inspired by 1970's wacky pack trading cards that goofed on modern advertisements. 
+'bamazon' is a CLI inventory management app that was created with Node.JS and MySQL. The theme for this app was inspired by 1970's Wacky Packages trading cards featuring parodies of consumer products. 
 
 ![bamazon Products](assets/bamazon_products.svg)
 
