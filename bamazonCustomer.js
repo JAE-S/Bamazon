@@ -201,25 +201,16 @@ function validateId(itemId){
 }
 
 // Validates stock quantities 
-function validateStock(quantity){
-    connection.query("SELECT * FROM products", function(err, res){
-        if(err) throw err;
-        var newAmount = res[i].stock_quantity - shoppingList[0].quantity;
-        if(shoppingList[0].item_Id === res[i].itemId && newAmount >= 0){
-            console.log(newAmount)
-            return true || "The quantity you selected is unavailable at this time."; 
-        } 
-        connection.end();
-    });
-}
-
-// function updateStock(){
-//     connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
-//     function(err, res){
+// function validateStock(quantity){
+//     connection.query("SELECT * FROM products", function(err, res){
 //         if(err) throw err;
-//         mainMenu();
-//     })
-//     connection.end();
+//         var newAmount = res[i].stock_quantity - shoppingList[0].quantity;
+//         if(shoppingList[0].item_Id === res[i].itemId && newAmount >= 0){
+//             console.log(newAmount)
+//             return true || "The quantity you selected is unavailable at this time."; 
+//         } 
+//         connection.end();
+//     });
 // }
 
 
