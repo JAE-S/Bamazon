@@ -31,8 +31,6 @@ connection.connect(function(err) {
 // Global variables
 var inventoryArr;
 var shoppingList;
-// var product_description = [];
-// var price = [];
 var table;
 var instock = false; 
 
