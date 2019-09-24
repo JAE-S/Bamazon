@@ -166,6 +166,8 @@ function addItem(){
     });
 }
 
+              // Back to menu
+
 //     {   
 //         prefix: '',
 //         message: "\n───────── ITEM ADDED ─────────\n".cyan,
@@ -186,7 +188,7 @@ function addItem(){
 //         when: function(answers){
 //             return answers.quantity;
 //         }
-
+}
 // function checkOut(){
 //     shoppingList(answers)
 //     console.log("Lets check out!")
