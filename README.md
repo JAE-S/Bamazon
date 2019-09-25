@@ -18,11 +18,12 @@
 - MYSQL
 - Inquirer
 - Cli-table3
+- Joi
 ```
 
 ---
 ### Demo Video
-![Screen capture](.gif)
+![Screen capture](assets/bamazon.gif)
 
 *App Functionality*
 ```

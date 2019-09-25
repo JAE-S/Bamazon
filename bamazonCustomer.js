@@ -4,10 +4,9 @@ var chalk = require('chalk');
 var colors = require('colors');
 
 var Table = require('cli-table3');
-
 var inquirer = require('inquirer');
-
 var mysql = require('mysql');
+var joi = require('joi'); 
 
 var connection = mysql.createConnection({
     host: "localhost", 
@@ -34,7 +33,6 @@ var shoppingList = [];
 var newRow = []; 
 var newAmount;
 var table;
-var instock = false; 
 
 // Create a table based on the data from the bamazon_db
 function showProducts(){
@@ -123,7 +121,7 @@ function activeMenu(){
         prefix: "",
         type: "list",
         name: "active",
-        message: [chalk.green("Please select one of the following options to continue: \n" +" ────────────────────────────────────────────────────────\n")],
+        message: [chalk.green("\n Please select one of the following options to continue: \n" +" ───────────────────────────────────────────────────────\n")],
         choices: ["Shop", "View Cart", "Check Out", new inquirer.Separator(), "Exit"] 
     }]).then(function(res){
         commands(res.active);
@@ -190,7 +188,7 @@ function addItem(){
     // Item added successfully 
     {
         prefix: '',
-        message: "\n ─────────────── ITEM ADDED ───────────────\n \n Would you like to add another item?".cyan,
+        message: "\n ─────────── ITEM ADDED ────────────\n \n Would you like to add another item?".cyan,
         type: "confirm",
         name: "item_added", 
         default: true
@@ -232,6 +230,7 @@ function validateStock(quantity){
         } 
     });
 }
+
 // Updates the SQL database to reflect the remaining quantity
 function updateStock(answers){
     connection.query("SELECT * FROM products", function(err, res){
@@ -244,7 +243,7 @@ function updateStock(answers){
     });
 }
 
-// Once the update goes through, show the customer the total cost of their purchase.
+// Shows the customer's items
 function viewCart(answers){
         // showCart()
         console.log("\n────────────────────────────── MY CART ───────────────────────────────\n".cyan);
@@ -277,18 +276,46 @@ function viewCart(answers){
             table.push(newRow)
           })
           console.log(table.toString() + "\n\n")
-        //   console.log(inventoryArr);
           activeMenu();
-    }
-      
+}
+
+// Checkout - complete order   
 function checkOut(){
    var finalTotal = 0; 
-  
     for (var i = 0; i < shoppingList.length; i++){
        var itemTotal = shoppingList[i].price * shoppingList[i].quantity;
         finalTotal = itemTotal + finalTotal;
-
     }
-    // finalCost = itemTotal++;
-    console.log("Your total is: $" + finalTotal)
+    inquirer.prompt([
+    {
+        prefix: '',
+        message: ["\n ─────────── CHECKOUT ───────────\n".cyan + ("\n Your total is: $" + finalTotal).cyan + "\n\n Would you like to complete this order?"],
+        type: "confirm",
+        name: "checkout", 
+        default: false
+
+    }]).then(function(answers){
+        if(answers.checkout){
+            console.log("\nThank you for chosing bamazon!".green + "\nYour order is confirmed.\n".green)
+            connection.end();
+        } else {
+            activeMenu();
+        }
+    })
 }
+
+// function validateId(itemId){
+//     var schema = Joi.number().required().min(10).max(22);
+//     return Joi.validate(itemId, schema, onValidation); 
+// }
+
+// function onValidation(err,val){
+//     if(err){
+//         console.log(err.message);
+//         return err.message;         
+//     }
+//     else{
+//         return true;            
+//     }
+           
+// }
