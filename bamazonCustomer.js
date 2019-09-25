@@ -6,7 +6,7 @@ var colors = require('colors');
 var Table = require('cli-table3');
 var inquirer = require('inquirer');
 var mysql = require('mysql');
-var joi = require('joi'); 
+var Joi = require('joi'); 
 
 var connection = mysql.createConnection({
     host: "localhost", 
@@ -213,24 +213,6 @@ function addItem(){
     });
 }
 
-// Validates that the user input matches a product's ID 
-function validateId(itemId){
-    var reg = /^\d+$/;
-    return reg.test(itemId) || "Please enter a valid product ID"
-}
-
-// Validates stock quantities 
-function validateStock(quantity){
-    connection.query("SELECT * FROM products", function(err, res){
-        if(err) throw err;
-        var newAmount = res.stock_quantity - shoppingList[0].quantity;
-        if(shoppingList[0].item_Id === res.itemId && newAmount >= 0){
-            console.log(newAmount)
-            return true || "The quantity you selected is unavailable at this time."; 
-        } 
-    });
-}
-
 // Updates the SQL database to reflect the remaining quantity
 function updateStock(answers){
     connection.query("SELECT * FROM products", function(err, res){
@@ -304,18 +286,33 @@ function checkOut(){
     })
 }
 
-// function validateId(itemId){
-//     var schema = Joi.number().required().min(10).max(22);
-//     return Joi.validate(itemId, schema, onValidation); 
-// }
+// Validates that the user input matches a product's ID 
+function validateId(itemId){
+    var schema = Joi.number().required().min(1).max(22);
+    return Joi.validate(itemId, schema, onValidation); 
+}
 
-// function onValidation(err,val){
-//     if(err){
-//         console.log(err.message);
-//         return err.message;         
-//     }
-//     else{
-//         return true;            
-//     }
+// Validates stock quantities 
+function validateStock(quantity){
+    
+    connection.query("SELECT * FROM products", function(err, res){
+        if(err) throw err;
+        var newAmount = res[answers.itemId-1].stock_quantity - quantity.quantity;
+        if(newAmount >= 0){
+            console.log(newAmount)
+            return true || "The quantity you selected is unavailable at this time."; 
+        } 
+        console.log(newAmount)
+    });
+}
+// Throws error message if validation is false 
+function onValidation(err,val){
+    if(err){
+        console.log(err.message);
+        return err.message;         
+    }
+    else{
+        return true;            
+    }
            
-// }
+}

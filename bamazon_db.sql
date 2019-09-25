@@ -6,7 +6,7 @@ use bamazon_db;
 -- Then create a Table inside of that database called `products` --
 create table products (
     -- item_id (unique id for each product) -- 
-    item_id init not null auto_increment, 
+    item_id int not null auto_increment, 
     -- product_name (Name of product) --
     product_name varchar(80) null, 
 
@@ -15,17 +15,15 @@ create table products (
     product_description varchar(160) null, 
 
     -- price (cost to customer)--
-    price integer(10,2) null,
+    price decimal(10,2) null,
 
     -- stock_quantity (how much of the product is available in stores) --
     stock_quantity integer(6) null, 
     primary key(item_id)
+);
 
-
-// 4. Populate this database with around 10 different products. (i.e. Insert "mock" data rows into this database and table).
-
-    insert into products (product_name, department_name, product_description price, stock_quantity)
-    values ("Blisterine", "Health & Wellness", "Monster mouthwash - fries germs on contact", 6.59, 250), 
+    INSERT INTO products(product_name, department_name, product_description, price, stock_quantity)
+    VALUES ("Blisterine", "Health & Wellness", "Monster mouthwash - fries germs on contact", 6.59, 250), 
             ("Crust Tooth Paste - 4.1oz", "Health & Wellness", "Garlic flavored tooth paste", 6.99 , 300), 
             ("Jerkins - Wild Soap", "Health & Wellness", "Cleans up dirty words", 6.50, 300), 
             ("Copperbone", "Health & Wellness", " Suntan lotion for skeletons - for a chrome colored dome", 12.00, 40), 
@@ -46,4 +44,4 @@ create table products (
             ("Shorts Illustrated", "Magazines", "Size 60 | Fashion... Worlds longest long johns", 5.99, 8), 
             ("Dirtycell", "Misc.", "Battery for prisoners", 1.40, 60), 
             ("Koduck", "Misc.", "Film for Ducks", 8.00, 40), 
-            ("Play-Dumb", "Misc.", "Moldy Clay", 4.60, 20) 
+            ("Play-Dumb", "Misc.", "Moldy Clay", 4.60, 20);
