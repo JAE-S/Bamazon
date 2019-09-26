@@ -1,3 +1,4 @@
+
   //───────────────────────────────────────────//
  //              Customer View                //
 //───────────────────────────────────────────//
@@ -43,7 +44,7 @@ var table;
 
 // Create a table based on the data from the bamazon_db
 function showProducts(){
-console.log("\n───────────────────────────────── P R O D U C T S ─────────────────────────────────\n".cyan);
+console.log("\n─────────────────────────────────── P R O D U C T  I N V E N T O R Y ────────────────────────────────────\n".cyan);
     connection.query("SELECT * FROM products", function(err, res){
     if(err) throw err;
     var inventoryArr = [];
@@ -55,13 +56,14 @@ console.log("\n─────────────────────�
                , 'right': '║' , 'right-mid': '╢' , 'middle': '│' },
         // Headings
         head: [{hAlign:'center', content:"PRODUCT ID".cyan,vAlign:'center'}, 
+                {hAlign:'center', content:"DEPARTMENT".cyan,vAlign:'center'}, 
                {hAlign:'center', content:"NAME".cyan,vAlign:'center'}, 
                {hAlign:'center', content:"DESCRIPTION".cyan,vAlign:'center'}, 
                {hAlign:'center', content:"PRICE".cyan,vAlign:'center'}],
         // Padding
         style: { 'padding-left': 1, 'padding-right': 1 },
         // Column Widths
-        colWidths: [12, 29, 29, 8],
+        colWidths: [12, 12, 29, 29, 8, 8],
         // Wrap text in cells at column width 
         wordWrap: true
       });
@@ -69,8 +71,10 @@ console.log("\n─────────────────────�
       res.forEach(function(row) {
         let newRow = [
             {hAlign:'center', content:row.item_id, vAlign:'center'}, 
+            {hAlign:'center', content:row.department_name, vAlign:'center'}, 
             {hAlign:'center', content:row.product_name, vAlign:'center'}, 
             {hAlign:'center', content:row.product_description, vAlign:'center'},
+            {hAlign:'center', content:row.stock_quantity, vAlign:'center'}, 
             {hAlign:'left', content:"$" + row.price, vAlign:'center'}
         ]
         table.push(newRow)
@@ -90,7 +94,7 @@ function mainMenu(){
         name: "mainMenu",
         message: [chalk.green(`
 ───────────────────────────────────────────────────────────────────────────────────
-                                    WELCOME TO
+                                    
 ───────────────────────────────────────────────────────────────────────────────────
 
                                                                                 
@@ -102,38 +106,18 @@ function mainMenu(){
                                                                         
 
 ───────────────────────────────────────────────────────────────────────────────────
-                1 STOP SHOP FOR EVERYTHING FROM A-Z THAT YOU DON'T NEED
+                            M A N A G E R   V I E W 
 ───────────────────────────────────────────────────────────────────────────────────
-            \n\n\n`) + "Please select one of the options below to begin!\n" +"────────────────────────────────────────────────\n"],
-        choices: ["View Products", "Shop", new inquirer.Separator(), "Exit"]
+            \n\n\n`) + "What would you like to do? Please select one of the options below.\n" +"──────────────────────────────────────────────────────────────────\n"],
+        choices: ["View Products", "Check Inventory", "Restock Inventory", "Add New Products", new inquirer.Separator(), "Exit"]
     }]).then(function(res){
         commands(res.mainMenu);
     })
 }
-// Called from the showProducts function which prompts user to choose between the following options: "Shop" and "Exit"
-function menu(){
-    inquirer.prompt([{
-        prefix: "",
-        type: "list",
-        name: "menu",
-        message: [chalk.green("Excited about our products? Select the 'Shop' option below to continue!\n" +" ───────────────────────────────────────────────────────────────────────\n")],
-        choices: ["Shop", new inquirer.Separator(), "Exit"] 
-    }]).then(function(res){
-        commands(res.menu);
-    })
-}
-// Called from the addItem function which prompts user to choose between the following options: "Shop", "View Cart", "Check out", and "Exit"
-function activeMenu(){
-    inquirer.prompt([{
-        prefix: "",
-        type: "list",
-        name: "active",
-        message: [chalk.green("\n Please select one of the following options to continue: \n" +" ───────────────────────────────────────────────────────\n")],
-        choices: ["Shop", "View Cart", "Check Out", new inquirer.Separator(), "Exit"] 
-    }]).then(function(res){
-        commands(res.active);
-    })
-}
+
+// checkInventory(); 
+// restockInventory(); 
+// addProduct(); 
 
 //──────── Switch statement for commands ────────//
 function commands(name){
@@ -143,16 +127,16 @@ function commands(name){
         showProducts();
         break; 
         // Promptes user to select an item 
-        case "Shop":
-        addItem();
+        case "Check Inventory":
+        checkInventory();
         break;
         // View cart
-        case "View Cart":
-        viewCart();
+        case "Restock Inventory":
+        restockInventory();
         break;
         // Completes order
-        case "Check Out":
-        checkOut();
+        case "Add New Products":
+        addProduct();
         break;
         // Exits the program
         case "Exit":
@@ -161,15 +145,30 @@ function commands(name){
     }
 }
 
-//──────── Exit the App ────────//
-function exit(){
-    shoppingList = [];
-    console.log("\n Good bye!\n"); 
-    connection.end();
+//──────── Checks for products with a quantity of less than 5 ────────//
+function restockInventory(answers){
+    connection.query("SELECT * FROM products", function(err, res){
+    var newAmount = res[answers.itemId-1].stock_quantity - answers.quantity;
+  
+        connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
+        function(err, res){
+            if(err) throw err;
+        })
+    });
 }
-
-//──────── Add an item to the shoppingList ────────//
-function addItem(){
+//──────── Updates the SQL database to reflect the new quantity ────────//
+function restockInventory(answers){
+    connection.query("SELECT * FROM products", function(err, res){
+    var newAmount = res[answers.itemId-1].stock_quantity - answers.quantity;
+  
+        connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
+        function(err, res){
+            if(err) throw err;
+        })
+    });
+}
+//──────── Adds an item to the inventory ────────//
+function addProduct(){
   
     inquirer.prompt([
     // Asks for the ID of a product
@@ -219,77 +218,11 @@ function addItem(){
         updateStock(answers);
     });
 }
-
-//──────── Updates the SQL database to reflect the remaining quantity ────────//
-function updateStock(answers){
-    connection.query("SELECT * FROM products", function(err, res){
-    var newAmount = res[answers.itemId-1].stock_quantity - answers.quantity;
-  
-        connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
-        function(err, res){
-            if(err) throw err;
-        })
-    });
-}
-
-//──────── View shoppingList ────────//
-function viewCart(){
-        console.log("\n────────────────────────────── MY CART ───────────────────────────────\n".cyan);
-        var table = new Table({
-            // Border
-            chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
-                   , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
-                   , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
-                   , 'right': '║' , 'right-mid': '╢' , 'middle': '│' },
-            // Headings
-            head: [{hAlign:'center', content:"PRODUCT ID".cyan,vAlign:'center'}, 
-                   {hAlign:'center', content:"NAME".cyan,vAlign:'center'}, 
-                   {hAlign:'center', content:"QUANTITY".cyan,vAlign:'center'}, 
-                   {hAlign:'center', content:"PRICE".cyan,vAlign:'center'}],
-            // Padding
-            style: { 'padding-left': 1, 'padding-right': 1 },
-            // Column Widths
-            colWidths: [12, 29, 12, 12],
-            // Wrap text in cells at column width 
-            wordWrap: true
-          });
-          // For each product create a row with item_id, product_name, product_description, and price
-          shoppingList.forEach(function(row) {
-             newRow = [
-                {hAlign:'center', content: row.item_Id, vAlign:'center'}, 
-                {hAlign:'center', content: row.name, vAlign:'center'}, 
-                {hAlign:'center', content: row.quantity, vAlign:'center'}, 
-                {hAlign:'left', content:"$" + row.price, vAlign:'center'}
-            ]
-            table.push(newRow)
-          })
-          console.log(table.toString() + "\n\n")
-          activeMenu();
-}
-
-//──────── Checkout - Complete order ────────// 
-function checkOut(){
-   var finalTotal = 0; 
-    for (var i = 0; i < shoppingList.length; i++){
-       var itemTotal = shoppingList[i].price * shoppingList[i].quantity;
-        finalTotal = itemTotal + finalTotal;
-    }
-    inquirer.prompt([
-    {
-        prefix: '',
-        message: ["\n ─────────── CHECKOUT ───────────\n".cyan + ("\n Your total is: $" + finalTotal).cyan + "\n\n Would you like to complete this order?"],
-        type: "confirm",
-        name: "checkout", 
-        default: false
-
-    }]).then(function(answers){
-        if(answers.checkout){
-            console.log("\nThank you for chosing bamazon!".green + "\nYour order is confirmed.\n".green)
-            connection.end();
-        } else {
-            activeMenu();
-        }
-    })
+//──────── Exit the App ────────//
+function exit(){
+    shoppingList = [];
+    console.log("\n Good bye!\n"); 
+    connection.end();
 }
 
 // Validates that the user input matches a product's ID 
@@ -321,3 +254,8 @@ function onValidation(err,val){
     }
            
 }
+
+// If a manager selects View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
+// If a manager selects View Low Inventory, then it should list all items with an inventory count lower than five.
+// If a manager selects Add to Inventory, your app should display a prompt that will let the manager "add more" of any item currently in the store.
+// If a manager selects Add New Product, it should allow the manager to add a completely new product to the store.

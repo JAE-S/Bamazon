@@ -3,6 +3,7 @@ Drop database if exists bamazon_db;
 create database bamazon_db;
 
 use bamazon_db;
+
 -- Then create a Table inside of that database called `products` --
 create table products (
     -- item_id (unique id for each product) -- 
@@ -45,3 +46,4 @@ create table products (
             ("Dirtycell", "Misc.", "Battery for prisoners", 1.40, 60), 
             ("Koduck", "Misc.", "Film for Ducks", 8.00, 40), 
             ("Play-Dumb", "Misc.", "Moldy Clay", 4.60, 20);
+
