@@ -36,8 +36,7 @@ connection.connect(function(err) {
 });
 
 //──────── Global Variables ────────//
-var inventoryArr;
-var shoppingList = [];
+var inventoryArr = [];
 var newRow = []; 
 var newAmount;
 var table;
@@ -61,6 +60,7 @@ function welcome(){
                     1 STOP SHOP FOR EVERYTHING FROM A-Z THAT YOU DON'T NEED
 ───────────────────────────────────────────────────────────────────────────────────────
                 \n\n`));
+inventory()
 }
 
 // Create a table based on the data from the bamazon_db
@@ -68,7 +68,7 @@ function showProducts(){
 console.log("\n─────────────────────────────────── P R O D U C T  I N V E N T O R Y ────────────────────────────────────\n".cyan);
     connection.query("SELECT * FROM products", function(err, res){
     if(err) throw err;
-    var inventoryArr = [];
+    var inventoryArr = []; 
     var table = new Table({
         // Border
         chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
@@ -100,12 +100,30 @@ console.log("\n─────────────────────�
             {hAlign:'left', content:"$" + row.price, vAlign:'center'}
         ]
         table.push(newRow)
+        inventoryArr.push({item_id: row.item_id, 
+                           department_name: row.department_name, 
+                           product_name: row.product_name, 
+                           stock_quantity: row.stock_quantity,
+                           price: row.price});
       })
       console.log(table.toString() + "\n\n")
       mainMenu();
       });
  
 }
+function inventory(){
+    connection.query("SELECT * FROM products", function(err, res){
+        if(err) throw err;
+        for (var i = 0; res.length > i; i++){
+            inventoryArr.push({item_id: res[i].item_id, 
+                department_name: res[i].department_name, 
+                product_name: res[i].product_name, 
+                stock_quantity: res[i].stock_quantity,
+                price: res[i].price});
+        }
+    });
+}
+
 // First function that prompts user to choose between the following options: "View Products", "Check Inventory, "Restock Inventory", "Add New Products", and "Exit"
 function mainMenu(){
     inquirer.prompt([{
@@ -205,7 +223,7 @@ function restockInventory(){
         {
             prefix: "", 
             type: "input", 
-            message: "\n What product would you like to update? \n\n Please enter the item's ID",
+            message: "\n What product would you like to update? \n\n",
             name: "itemId",
             validate: validateId
         },
@@ -237,7 +255,6 @@ function restockInventory(){
                     message: "\n──────────── ITEM UPDATED ─────────────\n".green + "\nWould you like to update another item?\n───────────────────────────────────────".cyan,
                     default: false
                 }]).then(function(res){
-                    
                     if (res.stock){
                         restockInventory();
                         } else if (!res.stock){
@@ -255,63 +272,91 @@ function restockInventory(){
     // });
 }
 //──────── Adds an item to the inventory ────────//
-// function addProduct(){
-  
-//     inquirer.prompt([
-//     // Asks for the ID of a product
-//     {
-//         prefix: '',
-//         message: "\n |Add Item| Enter an Item's ID: ",
-//         type: "input",
-//         name: "itemId", 
-//         validate: validateId
-//     }, 
-//     // Ask how many units of the product the user would like to buy
-//     {   
-//         prefix: '',
-//         message: "\n Please select a quantity: ",
-//         type: "list",
-//         name: "quantity", 
-//         choices: [1, 2, 3, 4],
-//         validate: validateStock,
-//         when: function(answers){
-//             return answers.itemId;
-//         }
-//     },
-//     // Item added successfully 
-//     {
-//         prefix: '',
-//         message: "\n ─────────── ITEM ADDED ────────────\n \n Would you like to add another item?".cyan,
-//         type: "confirm",
-//         name: "item_added", 
-//         default: true
+function addProduct(newItem){
+    console.log("\n───────────────────────── ADD NEW PRODUCT ──────────────────────────\n".cyan);
+    inquirer.prompt([
+        {
+            prefix: "", 
+            type: "input", 
+            message: "\n What product would you like to add? \n\n Please enter the products name",
+            name: "productName",
+            // validate: productName
+        },
+        {   
+            prefix: '',
+            message: "\n What department does this product belong to? ",
+            type: "list",
+            name: "departmentName", 
+            choices: ["Health & Wellness", "Beverages", "Cereal", "Grains", "Sweets", "Magazines", "Misc."],
+            when: function(newItem){
+                return newItem.productName;
+            }
+        },
+        {   
+            prefix: '',
+            message: "\n Please enter a brief description. ",
+            type: "input",
+            name: "productDescription", 
+            when: function(newItem){
+                return newItem.departmentName;
+            }
+        },
+        {   
+            prefix: '',
+            message: "\n What is the stock quanity? ",
+            type: "input",
+            name: "updateQuantity", 
+            validate: validateStockQuantity,
+            when: function(newItem){
+                return newItem.productDescription;
+            }
+        },
+        {   
+            prefix: '',
+            message: "\n What is the sale price? ",
+            type: "input",
+            name: "price", 
+            // validate: validateprice,
+            when: function(newItem){
+                return newItem.updateQuantity;
+            }
+        },
+        
+    
+        ]).then(function(res){
 
-//     }]).then(function(answers){
-//         connection.query(`SELECT * FROM products WHERE item_id = ${answers.itemId}`, function(err, res){
-//             if(err) throw err;
-//             shoppingList.push({item_Id: answers.itemId, 
-//                                name: res[0].product_name, 
-//                                price: res[0].price, 
-//                                quantity: answers.quantity});
-//         })
-//         if (answers.item_added){
-//             addItem();
-//         } else if (!answers.item_added){
-//             // console.log("please show my cart");
-//             activeMenu();
-//             return shoppingList;
-//         }
-//         // console.log(shoppingList);
-//         updateStock(answers);
-//     });
-// }
+            connection.query("INSERT INTO products SET ?",
+                {
+                department_name: res.productName, 
+                product_name: res.productDescription, 
+                product_description: res.productDescription, 
+                stock_quantity: res.updateQuantity,
+                price: res.price, 
+                }, function(err, res){
+                    if (err) throw err; 
+
+                    inquirer.prompt([{
+                        prefix: "",
+                        type: "confirm",
+                        name: "itemAdded",
+                        message: "\n──────────── ITEM ADDED ─────────────\n".green + "\nWould you like to add another item?\n───────────────────────────────────────".cyan,
+                        default: false
+                    }]).then(function(items){
+                        if (items.itemAdded){
+                            addProduct();
+                            } else if (!items.itemAdded){
+                            mainMenu();
+                        }
+                    })
+                })
+        });
+}
 //──────── Exit the App ────────//
 function exit(){
     shoppingList = [];
     console.log("\n Good bye!\n"); 
     connection.end();
 }
-
 // Validates that the user input matches a product's ID 
 function validateId(itemId){
     var schema = Joi.number().required().min(1).max(22);
@@ -322,19 +367,6 @@ function validateStockQuantity(updateQuantity){
     var schema = Joi.number().required().min(-20).max(200);
     return Joi.validate(updateQuantity, schema, onValidation); 
 }
-
-// Validates stock quantities 
-// function validateStock(quantity){
-    
-//     connection.query("SELECT * FROM products", function(err, res){
-//         if(err) throw err;
-//         var newAmount = res[answers.itemId-1].stock_quantity - quantity.quantity;
-//         if(newAmount >= 0){
-//             console.log(newAmount)
-//             return true || "The quantity you selected is unavailable at this time."; 
-//         } 
-//     });
-// }
 // Throws error message if validation is false 
 function onValidation(err,val){
     if(err){
@@ -347,7 +379,4 @@ function onValidation(err,val){
            
 }
 
-// If a manager selects View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
-// If a manager selects View Low Inventory, then it should list all items with an inventory count lower than five.
-// If a manager selects Add to Inventory, your app should display a prompt that will let the manager "add more" of any item currently in the store.
 // If a manager selects Add New Product, it should allow the manager to add a completely new product to the store.
