@@ -199,16 +199,61 @@ function checkInventory(){
     });
 }
 //──────── Updates the SQL database to reflect the new quantity ────────//
-// function restockInventory(answers){
-//     connection.query("SELECT * FROM products", function(err, res){
-//     var newAmount = res[answers.itemId-1].stock_quantity - answers.quantity;
+function restockInventory(){
+    console.log("\n──────────────────────────── RE-STOCK INVENTORY ─────────────────────────────\n".cyan);
+    inquirer.prompt([
+        {
+            prefix: "", 
+            type: "input", 
+            message: "\n What product would you like to update? \n\n Please enter the item's ID",
+            name: "itemId",
+            validate: validateId
+        },
+        {   
+            prefix: '',
+            message: "\n Please enter the quantity: ",
+            type: "input",
+            name: "updateQuantity", 
+            validate: validateStockQuantity,
+            when: function(answers){
+                return answers.itemId;
+            }
+        },
+    
+        ]).then(function(answers){
+
+            connection.query("SELECT * FROM products", function(err, res){
+                var newQuantity = parseFloat(res[answers.itemId-1].stock_quantity) + parseFloat(answers.updateQuantity);
+              
+                    connection.query(`UPDATE products SET stock_quantity = ${newQuantity} WHERE item_id = ${answers.itemId}`,
+                    function(err, res){
+                        if(err) throw err;
+                    })
+                });
+                inquirer.prompt([{
+                    prefix: "",
+                    type: "confirm",
+                    name: "stock",
+                    message: "\n──────────── ITEM UPDATED ─────────────\n".green + "\nWould you like to update another item?\n───────────────────────────────────────".cyan,
+                    default: false
+                }]).then(function(res){
+                    
+                    if (res.stock){
+                        restockInventory();
+                        } else if (!res.stock){
+                        mainMenu();
+                    }
+                })
+            });
+    // connection.query("SELECT * FROM products", function(err, res){
+    // var newAmount = res[answers.itemId-1].stock_quantity - answers.quantity;
   
-//         connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
-//         function(err, res){
-//             if(err) throw err;
-//         })
-//     });
-// }
+    //     connection.query(`UPDATE products SET stock_quantity = ${newAmount} WHERE item_id = ${answers.itemId}`,
+    //     function(err, res){
+    //         if(err) throw err;
+    //     })
+    // });
+}
 //──────── Adds an item to the inventory ────────//
 // function addProduct(){
   
@@ -268,10 +313,15 @@ function exit(){
 }
 
 // Validates that the user input matches a product's ID 
-// function validateId(itemId){
-//     var schema = Joi.number().required().min(1).max(22);
-//     return Joi.validate(itemId, schema, onValidation); 
-// }
+function validateId(itemId){
+    var schema = Joi.number().required().min(1).max(22);
+    return Joi.validate(itemId, schema, onValidation); 
+}
+// Validates that the user input matches a product's ID 
+function validateStockQuantity(updateQuantity){
+    var schema = Joi.number().required().min(-20).max(200);
+    return Joi.validate(updateQuantity, schema, onValidation); 
+}
 
 // Validates stock quantities 
 // function validateStock(quantity){
@@ -286,16 +336,16 @@ function exit(){
 //     });
 // }
 // Throws error message if validation is false 
-// function onValidation(err,val){
-//     if(err){
-//         console.log(err.message);
-//         return err.message;         
-//     }
-//     else{
-//         return true;            
-//     }
+function onValidation(err,val){
+    if(err){
+        console.log(err.message);
+        return err.message;         
+    }
+    else{
+        return true;            
+    }
            
-// }
+}
 
 // If a manager selects View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
 // If a manager selects View Low Inventory, then it should list all items with an inventory count lower than five.
