@@ -11,8 +11,8 @@
  bamazon allows customers to place orders and then depletes stock from the store's inventory.
 ```
 ---
-### Demo Video
-![Screen capture](assets/bamazon.gif)
+### Customer View - Demo Video 
+![Customer View](assets/bamazon.gif)
 
 *App Commands*
 ```
@@ -22,6 +22,20 @@
 - Checkout 
 - Exit 
 ```
+
+---
+### Manager View - Demo Video 
+![Manager View](assets/bamazon_manager_view.gif)
+
+*App Commands*
+```
+- View Products for Sale
+- View Low Inventory
+- Update Product Quantities
+- Add New Products 
+- Exit 
+```
+
 *Node Packages*
 ```
 - Chalk 

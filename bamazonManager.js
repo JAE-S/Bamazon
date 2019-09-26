@@ -1,4 +1,6 @@
 
+
+
   //───────────────────────────────────────────//
  //              Customer View                //
 //───────────────────────────────────────────//
@@ -223,13 +225,13 @@ function restockInventory(){
         {
             prefix: "", 
             type: "input", 
-            message: "\n What product would you like to update? \n\n",
+            message: "\n What product would you like to update?",
             name: "itemId",
             validate: validateId
         },
         {   
             prefix: '',
-            message: "\n Please enter the quantity: ",
+            message: "\n Please enter the amount you would like to add: ",
             type: "input",
             name: "updateQuantity", 
             validate: validateStockQuantity,
@@ -272,7 +274,7 @@ function restockInventory(){
     // });
 }
 //──────── Adds an item to the inventory ────────//
-function addProduct(newItem){
+function addProduct(){
     console.log("\n───────────────────────── ADD NEW PRODUCT ──────────────────────────\n".cyan);
     inquirer.prompt([
         {
@@ -321,7 +323,6 @@ function addProduct(newItem){
                 return newItem.updateQuantity;
             }
         },
-        
     
         ]).then(function(res){
 
