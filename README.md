@@ -14,7 +14,7 @@
    ![bamazon Products](assets/bamazon_products.svg)
 > The theme for this app was inspired by 1970's Wacky Packages trading cards featuring parodies of consumer products. 
 ---
----
+
 ## Technologies
 > <b>Design Tools:</b>
   * Adobe Illustrator
@@ -55,35 +55,29 @@
     </details>
 ---
 
-## File Architecture
-
-<details><summary><b>Click To View</b></summary>
- 
-         ```
-         bamazon
-         ├── assets
-         │   ├── bamazon_logo.svg
-         │   ├── bamazon_manager_view.gif  
-         │   ├── bamazon_products.svg 
-         │   └── bamazon.gif
-         ├── node_modules
-         ├── .gitignore
-         ├── bamazon_db.sql
-         ├── bamazon_workbench.sql
-         ├── bamazonCustomer.js
-         ├── bamazonManager.js
-         ├── package.json
-         └── README.md
-         ```
-
-
-</details>
+## File Architecture 
+    ```
+    bamazon
+    ├── assets
+    │   ├── bamazon_logo.svg
+    │   ├── bamazon_manager_view.gif  
+    │   ├── bamazon_products.svg 
+    │   └── bamazon.gif
+    ├── node_modules
+    ├── .gitignore
+    ├── bamazon_db.sql
+    ├── bamazon_workbench.sql
+    ├── bamazonCustomer.js
+    ├── bamazonManager.js
+    ├── package.json
+    └── README.md
+    ```
 
 ---
 
 ## Setup
 
-> This app is only functional through the command line. Follow the steps below to test it out. 
+> This application is only functional through the command line. Follow the steps below to test it out. 
 
 ```
 1. $ git clone https://github.com/JAE-S/Bamazon.git
