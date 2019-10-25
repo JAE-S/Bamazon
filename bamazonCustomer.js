@@ -294,7 +294,7 @@ function checkOut(){
 
 // Validates that the user input matches a product's ID 
 function validateId(itemId){
-    var schema = Joi.number().required().min(1).max(22);
+    var schema = Joi.number().required().min(1).max(24);
     return Joi.validate(itemId, schema, onValidation); 
 }
 
