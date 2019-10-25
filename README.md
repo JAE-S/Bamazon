@@ -7,7 +7,7 @@
   * [Technologies](#technologies)
   * [Features And Functionality](#features-and-functionality)
   * [File Architecture](#file-architecture)
-  * [Setup](setup)
+  * [Setup](#setup)
 ---
 
 ## Design Process
@@ -56,7 +56,7 @@
 ---
 
 ## File Architecture 
-    ```
+    
     bamazon
     ├── assets
     │   ├── bamazon_logo.svg
@@ -71,7 +71,7 @@
     ├── bamazonManager.js
     ├── package.json
     └── README.md
-    ```
+   
 
 ---
 
